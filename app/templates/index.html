@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://unpkg.com/htmx.org@1.9.11"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Автоматическая посещаемость в ЛЭТИ</h1>
+        <h2>Добавить пользователя</h2>
+        <form id="form" class="form" hx-post="/user" hx-target="body" hx-indicator="#indicator">
+            <div class="row">
+                <input type="email" name="email" placeholder="Email" required value="{{ email }}">
+            </div>
+            <div class="row">
+                <input type="password" name="password" placeholder="Password" required value="{{ password }}">
+            </div>
+            <button id="submitBtn" type="submit">Добавить</button>
+            <div class="htmx-indicator" id="indicator">
+                Загрузка
+                <img src="/static/loading.gif">
+            </div>
+        </form>
+        <span id="error">{{ error }}</span>
+        <span id="message">
+            {{ message }}
+        </span>
+    </div>
+</body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", (event) => {
+        document.body.addEventListener("htmx:beforeSwap", function (evt) {
+            if (evt.detail.xhr.status === 422) {
+                evt.detail.shouldSwap = true;
+                evt.detail.isError = false;
+            }
+        });
+        document.body.addEventListener("htmx:beforeRequest", function (evt) {
+            var button = document.getElementById("submitBtn");
+            button.disabled = true;
+        })
+        document.body.addEventListener("htmx:afterRequest", function (evt) {
+            var button = document.getElementById("submitBtn");
+            button.disabled = false;
+        })
+    })
+</script>
+
+</html>

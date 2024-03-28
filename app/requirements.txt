@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+selenium
+redis
+celery
+jinja2
+python-multipart
+gunicorn
