@@ -45,19 +45,14 @@ def attend_users():
     asyncio.run(attend_users_async())
 
 
-# crontab(
-#     minute=50,
-#     hour="8, 9, 11, 13, 15, 17",
-#     day_of_week="mon,tue,wed,thu,fri,sat",
-# ),
-
-
 celery.autodiscover_tasks()
 celery.conf.beat_schedule = {
     "attend_users": {
         "task": "worker.attend_users",
         "schedule": crontab(
-            minute="*/1",
+            minute=50,
+            hour="8, 9, 11, 13, 15, 17",
+            day_of_week="mon,tue,wed,thu,fri,sat",
         ),
     }
 }
