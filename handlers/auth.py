@@ -36,7 +36,7 @@ async def command_cancel_handler(message: Message, state: FSMContext):
     if current_state is None:
         return
     await state.clear()
-    await message.answer("Cancelled.", reply_markup=keyboard)
+    await message.answer("Авторизация отменена", reply_markup=keyboard)
 
 
 @auth_router.message(LoginForm.email)
