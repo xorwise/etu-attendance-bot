@@ -1,7 +1,6 @@
 selenium
 redis
 celery
-gunicorn
 aiogram
 psycopg>=3.1
 python-dotenv
