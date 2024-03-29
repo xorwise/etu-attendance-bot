@@ -149,3 +149,17 @@ async def delete_user(id: int) -> None:
             )
     await conn.commit()
     await conn.close()
+
+
+async def is_user_present(user_id: int) -> bool:
+    conn = await connect()
+    async with conn.cursor() as cursor:
+        await cursor.execute(
+            """
+            SELECT id FROM users WHERE id = %s
+            """,
+            (user_id,),
+        )
+        row = await cursor.fetchone()
+    await conn.close()
+    return bool(row)
