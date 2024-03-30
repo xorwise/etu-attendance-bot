@@ -19,13 +19,16 @@ class MyDriver:
 
 def create_driver() -> WebDriver:
     options = Options()
+    options.binary_location = "/app/app/bin/chrome-linux64/chrome"
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-gpu")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--headless")
     options.add_argument("--start-maximized")
 
-    return webdriver.Chrome()
+    service = Service("/app/app/bin/chromedriver")
+
+    return webdriver.Chrome(service=service, options=options)
 
 
 def login(email: str | None, password: str | None) -> WebDriver:
@@ -72,7 +75,6 @@ def login_lk(email: str, password: str, driver: WebDriver) -> list[dict]:
 
 
 def attend(cookies: list[dict]) -> list[str]:
-    # service = Service("/home/xorwise/Coding/etu/app/chromedriver")
 
     my_driver = MyDriver(create_driver())
     with my_driver as driver:
@@ -106,7 +108,6 @@ def attend(cookies: list[dict]) -> list[str]:
         if "id.etu.ru" in driver.current_url:
             raise EtuAuthException("Cookies are invalid")
 
-        # buttons = driver.find_elements(by="xpath", value="//*[text()=' Отметиться ']")
         rows = driver.find_elements(by="class name", value="card-body")
         titles = []
         for row in rows:

@@ -12,7 +12,7 @@ from handlers.callbacks import callback_router
 from handlers.account import account_router
 from inlines.auth import auth_kb
 
-load_dotenv(".env")
+load_dotenv("app/.env")
 TOKEN = os.environ.get("BOT_TOKEN", None)
 
 dp = Dispatcher()

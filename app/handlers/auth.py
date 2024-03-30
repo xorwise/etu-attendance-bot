@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 from aiogram.enums import ParseMode
 import os
 
-load_dotenv(".env")
+load_dotenv("app/.env")
 auth_router = Router()
 bot = Bot(os.environ.get("BOT_TOKEN", ""))
 
