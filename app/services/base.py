@@ -5,8 +5,15 @@ from selenium import webdriver
 from utils.exceptions import EtuAuthException
 import time
 
+"""Module for ETU attendance"""
+
 
 def create_driver() -> WebDriver:
+    """Function for creating webdriver
+
+    Returns:
+        WebDriver: webdriver
+    """
     options = Options()
     options.binary_location = "/app/app/bin/chrome-linux64/chrome"
     options.add_argument("--no-sandbox")
@@ -23,6 +30,15 @@ def create_driver() -> WebDriver:
 def add_cookies_by_domain(
     driver: WebDriver, cookies: list[dict], domain: str
 ) -> WebDriver:
+    """Function for adding cookies by domain to webdriver
+
+    Args:
+        driver (WebDriver): webdriver
+        cookies (list[dict]): list of cookies
+        domain (str): domain
+    Returns:
+        WebDriver: webdriver
+    """
     present = False
     for cookie in cookies:
         if cookie["domain"] == domain:
@@ -34,6 +50,13 @@ def add_cookies_by_domain(
 
 
 def attend(cookies: list[dict]) -> list[str]:
+    """Function for ETU attendance
+
+    Args:
+        cookies (list[dict]): list of cookies
+    Returns:
+        list[str]: list of subject titles that user has just attended
+    """
     driver = create_driver()
 
     driver.get("https://id.etu.ru/")

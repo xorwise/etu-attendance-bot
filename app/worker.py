@@ -4,11 +4,11 @@ from celery.schedules import crontab
 import os
 from dotenv import load_dotenv
 from database import queries
-from services.attend import attend
-from database.queries import delete_user, get_all_users
+import services
 import asyncio
-
 from utils.exceptions import EtuAuthException
+
+"""Celery module for ETU attendance"""
 
 load_dotenv(".env")
 
@@ -29,30 +29,33 @@ celery_app.conf.beat_schedule = {
 celery_app.autodiscover_tasks()
 
 
-async def attend_users_async():
-    print("checking users...")
+async def attend_users_async() -> None:
+    """Function for ETU attendance
+    checks all users and tries to attend them if cookies are valid
+    """
     bot = Bot(os.environ.get("BOT_TOKEN", ""))
-    for user in await get_all_users():
+    for user in await queries.get_all_users():
         cookies = await queries.get_cookies_by_user(user.email)
         try:
-            subjects = attend(cookies)
+            subjects = services.base.attend(cookies)
             subjects_string = ""
             for subject in subjects:
                 subjects_string += f"{subject}\n"
             if len(subjects) > 0:
                 await bot.send_message(
                     chat_id=user.id,
-                    text=f"Отметились на предметах✅\n{subjects_string} ",
+                    text=f"Отметились на предметах✅\n{subjects_string}",
                 )
         except EtuAuthException:
             await bot.send_message(
                 chat_id=user.id,
                 text="Сессия личного кабинета истекла❌\nПожалуйста, авторизуйтесь заново с помощью команды /login.",
             )
-            await delete_user(user.id)
+            await queries.delete_user(user.id)
     await bot.session.close()
 
 
 @celery_app.task
-def attend_users():
+def attend_users() -> None:
+    """Celery task for user attendance"""
     asyncio.run(attend_users_async())

@@ -2,8 +2,11 @@ from database.models import User
 from database import connect
 from utils.exceptions import EtuNotFoundException
 
+"""Module for database queries"""
 
-async def create_tables():
+
+async def create_tables() -> None:
+    """Create users and cookies tables if they don't exist"""
     conn = await connect()
     async with conn.cursor() as cursor:
         await cursor.execute(
@@ -36,6 +39,11 @@ async def create_tables():
 
 
 async def insert_or_update_user(user: User) -> None:
+    """Function for inserting a new user if it doesn't exist, otherwise updating it
+
+    Args:
+        user (User): provided user
+    """
     conn = await connect()
     async with conn.cursor() as cursor:
         await cursor.execute(
@@ -50,6 +58,11 @@ async def insert_or_update_user(user: User) -> None:
 
 
 async def get_all_users() -> list[User]:
+    """Function for getting all users from the database
+
+    Returns:
+        list[User]: list of users
+    """
     conn = await connect()
     async with conn.cursor() as cursor:
         await cursor.execute(
@@ -62,7 +75,13 @@ async def get_all_users() -> list[User]:
     return [User(id=row[0], email=row[1]) for row in rows]
 
 
-async def insert_or_update_cookies(cookies: list[dict], email: str):
+async def insert_or_update_cookies(cookies: list[dict], email: str) -> None:
+    """Function for inserting cookies if they doesn't exist for a specific user, otherwise updating them
+
+    Args:
+        cookies (list[dict]): cookies
+        email (str): user email
+    """
     conn = await connect()
     async with conn.cursor() as cursor:
         for cookie in cookies:
@@ -110,6 +129,13 @@ async def insert_or_update_cookies(cookies: list[dict], email: str):
 
 
 async def get_cookies_by_user(email: str) -> list[dict]:
+    """Function for getting cookies for a specific user
+
+    Args:
+        email (str): user email
+    Returns:
+        list[dict]: list of cookies
+    """
     conn = await connect()
     async with conn.cursor() as cursor:
         await cursor.execute(
@@ -135,6 +161,11 @@ async def get_cookies_by_user(email: str) -> list[dict]:
 
 
 async def delete_user(id: int) -> None:
+    """Function for deleting a user
+
+    Args:
+        id (int): user id
+    """
     conn = await connect()
     async with conn.cursor() as cursor:
         await cursor.execute(
@@ -152,6 +183,13 @@ async def delete_user(id: int) -> None:
 
 
 async def is_user_present(user_id: int) -> bool:
+    """Function for checking if a user is present in the database
+
+    Args:
+        user_id (int): user id
+    Returns:
+        bool: True if user is present, False otherwise
+    """
     conn = await connect()
     async with conn.cursor() as cursor:
         await cursor.execute(

@@ -5,8 +5,7 @@ from aiogram.filters import Command
 from aiogram import F, Router, Bot
 from inlines.auth import cancel_kb, auth_kb
 from states.login import LoginForm
-from aiogram import types
-from services import attend
+import services
 from database import queries
 from utils.exceptions import EtuAuthException
 from utils.validators import is_valid
@@ -14,23 +13,41 @@ from dotenv import load_dotenv
 from aiogram.enums import ParseMode
 import os
 
+"""Module for auth handlers"""
+
 load_dotenv("app/.env")
 auth_router = Router()
 bot = Bot(os.environ.get("BOT_TOKEN", ""))
 
 
-@auth_router.callback_query(F.text == "/login")
 @auth_router.message(Command("login"))
-async def command_login_handler(message: Message, state: FSMContext):
+async def command_login_handler(message: Message, state: FSMContext) -> None:
+    """Handler for /login command
+
+    Args:
+        message (Message): message
+        state (FSMContext): authorization state
+    """
+    if await queries.is_user_present(message.chat.id):
+        keyboard = await auth_kb(message.chat.id)
+        await message.answer(
+            "Пользователь уже добавлен в автопосещаемость!", reply_markup=keyboard
+        )
+        return
     keyboard = await cancel_kb()
     await state.set_state(LoginForm.email)
     await message.answer("Введите свой Email!", reply_markup=keyboard)
 
 
-@auth_router.callback_query(F.text == "/cancel")
 @auth_router.message(Command("cancel"))
 @auth_router.message(F.text.casefold() == "cancel")
-async def command_cancel_handler(message: Message, state: FSMContext):
+async def command_cancel_handler(message: Message, state: FSMContext) -> None:
+    """Handler for /cancel command
+
+    Args:
+        message (Message): message
+        state (FSMContext): state
+    """
     keyboard = await auth_kb(message.chat.id)
     current_state = await state.get_state()
     if current_state is None:
@@ -41,6 +58,12 @@ async def command_cancel_handler(message: Message, state: FSMContext):
 
 @auth_router.message(LoginForm.email)
 async def login_email_handler(message: Message, state: FSMContext):
+    """Handler for email input with validation
+
+    Args:
+        message (Message): message
+        state (FSMContext): authorization state
+    """
     keyboard = await cancel_kb()
     if not is_valid(message.text):
         await message.answer(
@@ -56,7 +79,13 @@ async def login_email_handler(message: Message, state: FSMContext):
 
 
 @auth_router.message(LoginForm.password)
-async def login_password_handler(message: Message, state: FSMContext):
+async def login_password_handler(message: Message, state: FSMContext) -> None:
+    """Handler for password input with ETU authorization process
+
+    Args:
+        message (Message): message
+        state (FSMContext): authorization state
+    """
     data = await state.get_data()
     email = data.get("email")
     password = message.text
@@ -65,8 +94,8 @@ async def login_password_handler(message: Message, state: FSMContext):
     await bot.send_chat_action(chat_id=message.chat.id, action="typing")
 
     try:
-        driver = attend.login(email, password)
-        cookies = attend.login_lk(email, password, driver)
+        driver = services.auth.login(email, password)
+        cookies = services.auth.login_lk(email, password, driver)
         await queries.insert_or_update_user(User(id=message.chat.id, email=email))
         await queries.insert_or_update_cookies(cookies, email)
         keyboard = await auth_kb(message.chat.id)
