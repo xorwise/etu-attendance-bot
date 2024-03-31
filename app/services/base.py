@@ -15,14 +15,14 @@ def create_driver() -> WebDriver:
         WebDriver: webdriver
     """
     options = Options()
-    options.binary_location = "/app/app/bin/chrome-linux64/chrome"
+    options.binary_location = "/bin/chrome-linux64/chrome"
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-gpu")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--headless")
     options.add_argument("--start-maximized")
 
-    service = Service("/app/app/bin/chromedriver")
+    service = Service("/bin/chromedriver-linux64/chromedriver")
 
     return webdriver.Chrome(service=service, options=options)
 
