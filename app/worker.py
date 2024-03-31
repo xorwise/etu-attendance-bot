@@ -17,14 +17,54 @@ celery_app.conf.broker_url = os.getenv("CELERY_BROKER_URL")
 celery_app.conf.result_backend = os.getenv("CELERY_RESULT_BACKEND")
 celery_app.conf.timezone = "Europe/Moscow"
 celery_app.conf.beat_schedule = {
-    "attend_users": {
+    "attend_users-8.00": {
+        "task": "worker.attend_users",
+        "schedule": crontab(
+            minute=0,
+            hour=8,
+            day_of_week="1-6",
+        ),
+    },
+    "attend_users-9.50": {
         "task": "worker.attend_users",
         "schedule": crontab(
             minute=50,
-            hour="8, 9, 11, 13, 15, 17",
-            day_of_week="mon,tue,wed,thu,fri,sat",
+            hour=9,
+            day_of_week="1-6",
         ),
-    }
+    },
+    "attend_users-11.40": {
+        "task": "worker.attend_users",
+        "schedule": crontab(
+            minute=40,
+            hour=11,
+            day_of_week="1-6",
+        ),
+    },
+    "attend_users-13.40": {
+        "task": "worker.attend_users",
+        "schedule": crontab(
+            minute=40,
+            hour=13,
+            day_of_week="1-6",
+        ),
+    },
+    "attend_users-15.30": {
+        "task": "worker.attend_users",
+        "schedule": crontab(
+            minute=30,
+            hour=15,
+            day_of_week="1-6",
+        ),
+    },
+    "attend_users-17.20": {
+        "task": "worker.attend_users",
+        "schedule": crontab(
+            minute=20,
+            hour=17,
+            day_of_week="1-6",
+        ),
+    },
 }
 celery_app.autodiscover_tasks()
 
