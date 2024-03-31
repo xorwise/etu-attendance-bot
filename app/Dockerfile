@@ -1,4 +1,6 @@
 FROM python:3.12-slim as bot
+ENV TZ="Europe/Moscow"
+RUN date
 
 WORKDIR /app
 
