@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from aiogram.enums import ParseMode
 from aiogram.filters import Command, CommandStart
 from aiogram.types import Message
-from aiogram.utils.markdown import hbold
+from aiogram.utils.markdown import bold
 from handlers.auth import auth_router
 from handlers.callbacks import callback_router
 from handlers.account import account_router
@@ -32,12 +32,8 @@ async def command_start_handler(message: Message):
     """
     keyboard = await auth_kb(message.chat.id)
     await message.answer(
-        f"""
-        Привет, <b>{hbold(message.from_user.full_name)}</b>!
-        Я бот для автоматизации процесса посещаемости в ЛЭТИ.
-        Чтобы начать работу, введите команду /login.
-        """,
-        parse_mode=ParseMode.HTML,
+        f"Привет, **{bold(message.from_user.full_name)}**\!\nЯ бот для автоматизации процесса посещаемости в ЛЭТИ\.\nЧтобы начать работу, введите команду /login\.",
+        parse_mode=ParseMode.MARKDOWN_V2,
         reply_markup=keyboard,
     )
 
@@ -50,17 +46,8 @@ async def command_help_handler(message: Message) -> None:
         message (Message): message
     """
     await message.answer(
-        """
-    <b>Посещаемость ЛЭТИ</b>
-    Данный телеграм бот создан для автоматизации процесса посещаемости в университете ЛЭТИ.
-    Для начала работы воспользуйтесь командой /login.
-    Каждый будний день бот будет автоматически отмечаться на парах.
-    Используя данного бота, вы берете на себя ответственность за посещение пар.
-    Все пароли не сохраняются в базе данных.
-
-    Узать больше - https://github.com/xorwise/etu-attendance-bot
-    """,
-        parse_mode=ParseMode.HTML,
+        f"**{bold('Посещаемость ЛЭТИ')}**\nДанный телеграм бот создан для автоматизации процесса посещаемости в университете ЛЭТИ\.\nДля начала работы воспользуйтесь командой /login\.\nКаждый будний день бот будет автоматически отмечаться на парах\.\nИспользуя данного бота, вы берете на себя ответственность за посещение пар\.\nВсе пароли не сохраняются в базе данных\.\nУзать больше \- https://github\.com/xorwise/etu\-attendance\-bot",
+        parse_mode=ParseMode.MARKDOWN_V2,
     )
 
 
