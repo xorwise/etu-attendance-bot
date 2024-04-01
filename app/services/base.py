@@ -2,10 +2,13 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 from utils.exceptions import EtuAuthException
 import time
 
 """Module for ETU attendance"""
+
+names = ["lk_etu_ru_session", "XSRF-TOKEN", "remember_web"]
 
 
 def create_driver() -> WebDriver:
@@ -24,7 +27,7 @@ def create_driver() -> WebDriver:
 
     service = Service("/bin/chromedriver-linux64/chromedriver")
 
-    return webdriver.Chrome(service=service, options=options)
+    return webdriver.Chrome(options=options, service=service)
 
 
 def add_cookies_by_domain(
@@ -65,31 +68,29 @@ def attend(cookies: list[dict]) -> list[str]:
     driver.get("https://lk.etu.ru/")
     driver = add_cookies_by_domain(driver, cookies, "lk.etu.ru")
 
-    driver.get("https://digital.etu.ru/attendance/auth")
+    driver.get("https://digital.etu.ru/attendance/student")
     time.sleep(2)
 
     button = driver.find_element(by="class name", value="btn")
     button.click()
 
-    time.sleep(3)
+    time.sleep(2)
+    driver.get(driver.current_url)
     login_button = driver.find_element(by="xpath", value="//button[@type='submit']")
     login_button.click()
 
-    time.sleep(2)
     if "id.etu.ru" in driver.current_url:
         raise EtuAuthException("Cookies are invalid")
 
-    rows = driver.find_elements(by="class name", value="card-body")
+    time.sleep(3)
+    rows = driver.find_elements(By.CLASS_NAME, "card-body")
     titles = []
     for row in rows:
         try:
             button = row.find_element(by="xpath", value="//*[text()=' Отметиться ']")
             button.click()
             titles.append(
-                " ".join(
-                    el.text
-                    for el in row.find_elements(by="class name", value="card-title")
-                )
+                row.find_element(By.CLASS_NAME, value="title-3").text.replace("\n", " ")
             )
         except Exception:
             continue

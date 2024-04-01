@@ -78,9 +78,11 @@ async def attend_users_async() -> None:
         cookies = await queries.get_cookies_by_user(user.email)
         try:
             subjects = services.base.attend(cookies)
+            print(subjects)
             subjects_string = ""
             for subject in subjects:
                 subjects_string += f"{subject}\n"
+
             if len(subjects) > 0:
                 await bot.send_message(
                     chat_id=user.id,
