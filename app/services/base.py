@@ -41,7 +41,7 @@ def add_cookies_by_domain(
     """
     present = False
     for cookie in cookies:
-        if cookie["domain"] == domain:
+        if cookie["domain"] in domain:
             present = True
             driver.add_cookie(cookie)
     if not present:
