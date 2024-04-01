@@ -91,7 +91,9 @@ def attend(cookies: list[dict]) -> list[str]:
                     for el in row.find_elements(by="class name", value="card-title")
                 )
             )
-            time.sleep(1)
         except Exception:
             continue
+        finally:
+            time.sleep(1)
+
     return titles
