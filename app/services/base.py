@@ -74,11 +74,12 @@ def attend(cookies: list[dict]) -> list[str]:
     button = driver.find_element(by="class name", value="btn")
     button.click()
 
-    time.sleep(2)
+    time.sleep(3)
     driver.get(driver.current_url)
     login_button = driver.find_element(by="xpath", value="//button[@type='submit']")
     login_button.click()
 
+    time.sleep(2)
     if "id.etu.ru" in driver.current_url:
         raise EtuAuthException("Cookies are invalid")
 
