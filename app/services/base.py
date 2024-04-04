@@ -91,7 +91,10 @@ def attend(cookies: list[dict]) -> list[str]:
             button = row.find_element(by="xpath", value="//*[text()=' Отметиться ']")
             button.click()
             titles.append(
-                row.find_element(By.CLASS_NAME, value="title-3").text.replace("\n", " ")
+                " ".join(
+                    el.text.replace("\n", " ")
+                    for el in row.find_elements(By.CLASS_NAME, value="title-3")
+                )
             )
         except Exception:
             continue
