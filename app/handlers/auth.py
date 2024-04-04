@@ -36,7 +36,9 @@ async def command_login_handler(message: Message, state: FSMContext) -> None:
         return
     keyboard = await cancel_kb()
     await state.set_state(LoginForm.email)
-    await message.answer("Введите свой Email!", reply_markup=keyboard)
+    await message.answer(
+        "Введите свой Email от личного кабинета ЛЭТИ!", reply_markup=keyboard
+    )
 
 
 @auth_router.message(Command("cancel"))
