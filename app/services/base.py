@@ -69,21 +69,20 @@ def attend(cookies: list[dict]) -> list[str]:
     driver = add_cookies_by_domain(driver, cookies, "lk.etu.ru")
 
     driver.get("https://digital.etu.ru/attendance/student")
-    time.sleep(2)
+    time.sleep(1)
 
     button = driver.find_element(by="class name", value="btn")
     button.click()
 
-    time.sleep(3)
+    time.sleep(1)
     driver.get(driver.current_url)
     login_button = driver.find_element(by="xpath", value="//button[@type='submit']")
     login_button.click()
 
-    time.sleep(2)
+    time.sleep(3)
     if "id.etu.ru" in driver.current_url:
         raise EtuAuthException("Cookies are invalid")
 
-    time.sleep(3)
     rows = driver.find_elements(By.CLASS_NAME, "card-body")
     titles = []
     for row in rows:
@@ -98,7 +97,5 @@ def attend(cookies: list[dict]) -> list[str]:
             )
         except Exception:
             continue
-        finally:
-            time.sleep(1)
 
     return titles
