@@ -14,6 +14,7 @@ class User(BaseModel):
 
     id: int
     email: str
+    group_id: int
 
 
 class Cookie(BaseModel):
