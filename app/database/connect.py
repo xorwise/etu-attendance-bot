@@ -18,3 +18,12 @@ async def connect() -> psycopg.AsyncConnection:
         port=os.getenv("POSTGRES_PORT"),
     )
     return conn
+
+
+async def migrate():
+    conn = await connect()
+    migration_files = os.listdir("app/database/migrations")
+    async with conn.cursor() as cursor:
+        for file in migration_files:
+            await cursor.execute(open(f"app/database/migrations/{file}", "r").read())
+    await conn.commit()
