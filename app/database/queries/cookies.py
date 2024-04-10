@@ -1,5 +1,7 @@
 from database import connect
 
+"""Cookies queries module"""
+
 
 async def insert_or_update_cookies(cookies: list[dict], email: str) -> None:
     """Function for inserting cookies if they doesn't exist for a specific user, otherwise updating them

@@ -5,6 +5,11 @@ from utils.exceptions import EtuAuthException
 
 
 async def get_groups() -> list[dict]:
+    """Get groups from ETU API
+
+    Returns:
+        list[dict]: list of groups
+    """
     url = "https://digital.etu.ru/api/general/dicts/groups?scheduleId=publicated"
 
     headers = {
@@ -27,6 +32,17 @@ async def get_groups() -> list[dict]:
 
 
 async def get_user_group(cookies: list[dict]) -> int:
+    """Get user group from ETU API
+
+    Args:
+        cookies (list[dict]): list of cookies
+
+    Raises:
+        EtuAuthException: if cookies are invalid
+
+    Returns:
+        int: user group
+    """
     url = "https://lk.etu.ru/api/profile/current"
 
     request_cookies = {}
@@ -54,6 +70,14 @@ times = {
 
 
 async def get_subjects(api_id: int) -> list[dict]:
+    """Get subjects from ETU API
+
+    Args:
+        api_id (int): api id
+
+    Returns:
+        list[dict]: list of subjects
+    """
     url = f"https://digital.etu.ru/api/schedule/objects/publicated?groups={api_id}&withSubjectCode=false&withURL=false"
 
     response = requests.get(url)

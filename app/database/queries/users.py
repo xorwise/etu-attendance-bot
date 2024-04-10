@@ -2,6 +2,8 @@ from database.models import User
 from database import connect
 from utils.exceptions import EtuNotFoundException
 
+"""Users queries module"""
+
 
 async def get_user(id: int) -> User:
     """Function for getting a user from the database
@@ -55,12 +57,12 @@ async def get_all_users() -> list[User]:
     async with conn.cursor() as cursor:
         await cursor.execute(
             """
-            SELECT id, email FROM users
+            SELECT id, email, group_id FROM users
             """
         )
         rows = await cursor.fetchall()
     await conn.close()
-    return [User(id=row[0], email=row[1]) for row in rows]
+    return [User(id=row[0], email=row[1], group_id=row[2]) for row in rows]
 
 
 async def delete_user(id: int) -> None:
@@ -131,7 +133,15 @@ async def get_user_deadlines(user_id: int, weekday: str) -> list[str]:
     return deadlines
 
 
-async def insert_or_update_user_deadlines(user_id: int, subjects: list[dict]) -> None:
+async def insert_or_update_user_deadlines(
+    user_id: int, subjects: dict[str, list[dict]]
+) -> None:
+    """Function for inserting or updating user deadlines
+
+    Args:
+        user_id (int): user id
+        subjects (dict[str, list[dict]]): subjects
+    """
     conn = await connect()
     async with conn.cursor() as cursor:
         for weekday in subjects:
@@ -155,6 +165,13 @@ async def insert_or_update_user_deadlines(user_id: int, subjects: list[dict]) ->
 
 
 async def insert_or_delete_user_deadline(user_id: int, weekday: str, time: str) -> None:
+    """Function for inserting or deleting user deadline
+
+    Args:
+        user_id (int): user id
+        weekday (str): weekday ["MON", "TUE", "WED", "THU", "FRI", "SAT"]
+        time (str): time HH:MM
+    """
     conn = await connect()
     async with conn.cursor() as cursor:
         await cursor.execute(
@@ -164,7 +181,6 @@ async def insert_or_delete_user_deadline(user_id: int, weekday: str, time: str) 
             (weekday, time),
         )
         row = await cursor.fetchone()
-        print(row[0])
         await cursor.execute(
             """
         SELECT user_id, deadline_id FROM users_deadlines WHERE user_id = %s AND deadline_id = %s;
@@ -192,7 +208,15 @@ async def insert_or_delete_user_deadline(user_id: int, weekday: str, time: str) 
 
 
 async def get_users_by_deadline(weekday: str, time: str) -> list[User]:
-    print(weekday, time)
+    """Function for getting users by deadline
+
+    Args:
+        weekday (str): weekday ["MON", "TUE", "WED", "THU", "FRI", "SAT"]
+        time (str): time HH:MM
+
+    Returns:
+        list[User]: list of users
+    """
     conn = await connect()
     users = []
     async with conn.cursor() as cursor:
