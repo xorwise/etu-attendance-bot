@@ -46,7 +46,7 @@ async def command_subjects_handler(message: Message, state: FSMContext) -> None:
         state (FSMContext): state
     """
     user = await queries.users.get_user(message.chat.id)
-    if await queries.users.is_user_present(user.id):
+    if not (await queries.users.is_user_present(user.id)):
         keyboard = await inlines.auth.menu_kb(user.id)
         await message.answer("Меню", reply_markup=keyboard)
         return
