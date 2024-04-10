@@ -1,6 +1,7 @@
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
+import os
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from utils.exceptions import EtuAuthException
@@ -17,17 +18,12 @@ def create_driver() -> WebDriver:
     Returns:
         WebDriver: webdriver
     """
+    grid_url = f"http://{os.getenv('SELENIUM_HOST')}:4444/wd/hub"
+
     options = Options()
-    options.binary_location = "/bin/chrome-linux64/chrome"
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--headless")
-    options.add_argument("--start-maximized")
 
-    service = Service("/bin/chromedriver-linux64/chromedriver")
-
-    return webdriver.Chrome(options=options, service=service)
+    return webdriver.Remote(command_executor=grid_url, options=options)
 
 
 def add_cookies_by_domain(

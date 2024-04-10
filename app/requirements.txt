@@ -4,3 +4,4 @@ celery
 aiogram
 psycopg[binary]>=3.1
 python-dotenv
+requests

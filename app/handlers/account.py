@@ -4,6 +4,7 @@ import os
 from aiogram.filters import Command
 from aiogram.types import Message
 from database import queries
+from database.queries.users import is_user_present
 from states.callbacks import SubjectCallback
 from states.subjects import SubjectForm
 from utils import etu_api
@@ -45,6 +46,10 @@ async def command_subjects_handler(message: Message, state: FSMContext) -> None:
         state (FSMContext): state
     """
     user = await queries.users.get_user(message.chat.id)
+    if await queries.users.is_user_present(user.id):
+        keyboard = await inlines.auth.menu_kb(user.id)
+        await message.answer("Меню", reply_markup=keyboard)
+        return
     api_id = await queries.groups.get_group_api_id(user.group_id)
     subjects = await etu_api.get_subjects(api_id)
     await state.update_data(subjects=subjects)
