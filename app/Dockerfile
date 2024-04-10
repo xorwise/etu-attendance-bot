@@ -36,9 +36,9 @@ RUN apt-get install --yes --quiet --no-install-recommends \
         xvfb \
         && rm -rf /var/lib/apt/lists/*
 
-RUN wget -O /tmp/chrome-linux64.zip https://storage.googleapis.com/chrome-for-testing-public/123.0.6312.86/linux64/chrome-linux64.zip
+RUN wget -O /tmp/chrome-linux64.zip https://storage.googleapis.com/chrome-for-testing-public/123.0.6312.105/linux64/chrome-linux64.zip
 RUN unzip /tmp/chrome-linux64.zip -d /bin
-RUN wget -O /tmp/chromedriver-linux64.zip https://storage.googleapis.com/chrome-for-testing-public/123.0.6312.86/linux64/chromedriver-linux64.zip
+RUN wget -O /tmp/chromedriver-linux64.zip https://storage.googleapis.com/chrome-for-testing-public/123.0.6312.105/linux64/chromedriver-linux64.zip
 RUN unzip /tmp/chromedriver-linux64.zip -d /bin
 RUN rm /tmp/chrome-linux64.zip
 RUN rm /tmp/chromedriver-linux64.zip

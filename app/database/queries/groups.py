@@ -1,5 +1,7 @@
 from database import connect
 
+"""Groups queries module"""
+
 
 async def insert_all_groups(groups: list[dict]) -> None:
     """Insert all groups into the database
