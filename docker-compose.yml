@@ -2,13 +2,16 @@ version: "3.9"
 
 services:
   bot:
+    container_name: bot
     build: ./app
     volumes:
       - .:/app
     depends_on:
       - redis
       - postgres
+    restart: always
   worker:
+    container_name: worker
     build: ./app
     command: bash /app/app/celery_run.sh
     environment:
@@ -20,7 +23,9 @@ services:
       - redis
       - postgres
       - bot
+    restart: always
   beat:
+    container_name: beat
     build: ./app
     volumes:
       - .:/app
@@ -33,9 +38,12 @@ services:
       - postgres
       - bot
       - worker
+    restart: always
   redis:
+    container_name: redis
     image: redis
   postgres:
+    container_name: postgres
     image: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -45,6 +53,7 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
     ports:
       - "5432:5432"
+    restart: always
 
 volumes:
   postgres_data:
