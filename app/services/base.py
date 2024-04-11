@@ -1,4 +1,4 @@
-from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.chrome.options import Options
 import os
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
@@ -77,6 +77,7 @@ def attend(cookies: list[dict]) -> list[str]:
 
     time.sleep(3)
     if "id.etu.ru" in driver.current_url:
+        driver.quit()
         raise EtuAuthException("Cookies are invalid")
 
     rows = driver.find_elements(By.CLASS_NAME, "card-body")
@@ -93,5 +94,5 @@ def attend(cookies: list[dict]) -> list[str]:
             )
         except Exception:
             continue
-
+    driver.quit()
     return titles

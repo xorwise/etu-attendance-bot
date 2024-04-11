@@ -10,7 +10,6 @@ async def connect() -> psycopg.AsyncConnection:
     Returns:
         psycopg.AsyncConnection: async connection to the database
     """
-    print(os.getenv("POSTGRES_DB"))
     conn = await psycopg.AsyncConnection.connect(
         dbname=os.getenv("POSTGRES_DB"),
         user=os.getenv("POSTGRES_USER"),
