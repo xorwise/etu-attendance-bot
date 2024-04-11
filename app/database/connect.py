@@ -10,6 +10,7 @@ async def connect() -> psycopg.AsyncConnection:
     Returns:
         psycopg.AsyncConnection: async connection to the database
     """
+    print(os.getenv("POSTGRES_DB"))
     conn = await psycopg.AsyncConnection.connect(
         dbname=os.getenv("POSTGRES_DB"),
         user=os.getenv("POSTGRES_USER"),
@@ -18,3 +19,12 @@ async def connect() -> psycopg.AsyncConnection:
         port=os.getenv("POSTGRES_PORT"),
     )
     return conn
+
+
+async def migrate():
+    conn = await connect()
+    migration_files = os.listdir("app/database/migrations")
+    async with conn.cursor() as cursor:
+        for file in migration_files:
+            await cursor.execute(open(f"app/database/migrations/{file}", "r").read())
+    await conn.commit()

@@ -10,10 +10,12 @@ class User(BaseModel):
     Fields:
         id: int
         email: str
+        group_id: int
     """
 
     id: int
     email: str
+    group_id: int
 
 
 class Cookie(BaseModel):
@@ -36,3 +38,15 @@ class Cookie(BaseModel):
     expiry: Optional[int] = None
     httpOnly: Optional[bool] = None
     secure: Optional[bool] = None
+
+
+class Group(BaseModel):
+    """Group model
+
+    Fields:
+        id: int
+        api_id: int
+    """
+
+    id: int
+    api_id: int

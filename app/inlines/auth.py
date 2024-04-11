@@ -1,10 +1,10 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from database.queries import is_user_present
+from database.queries.users import is_user_present
 
 """Module for auth inlines"""
 
 
-async def auth_kb(user_id: int) -> InlineKeyboardMarkup:
+async def menu_kb(user_id: int) -> InlineKeyboardMarkup:
     """Function for creating auth keyboard
     if user is present it creates /logout button otherwise creates /login
 
@@ -21,7 +21,12 @@ async def auth_kb(user_id: int) -> InlineKeyboardMarkup:
         )
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="Удалить аккаунт🗑", callback_data="/logout")]
+            [
+                InlineKeyboardButton(
+                    text="Настроить предметы📚", callback_data="/subjects"
+                )
+            ],
+            [InlineKeyboardButton(text="Удалить аккаунт🗑", callback_data="/logout")],
         ]
     )
 
@@ -33,7 +38,5 @@ async def cancel_kb() -> InlineKeyboardMarkup:
         InlineKeyboardMarkup: cancel keyboard
     """
     return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text="Отмена❌", callback_data="/cancel")]
-        ]
+        inline_keyboard=[[InlineKeyboardButton(text="Отмена❌", callback_data="/menu")]]
     )

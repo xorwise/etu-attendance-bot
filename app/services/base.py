@@ -1,6 +1,7 @@
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
+import os
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from utils.exceptions import EtuAuthException
@@ -17,17 +18,12 @@ def create_driver() -> WebDriver:
     Returns:
         WebDriver: webdriver
     """
+    grid_url = f"http://{os.getenv('SELENIUM_HOST')}:4444/wd/hub"
+
     options = Options()
-    options.binary_location = "/bin/chrome-linux64/chrome"
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--headless")
-    options.add_argument("--start-maximized")
 
-    service = Service("/bin/chromedriver-linux64/chromedriver")
-
-    return webdriver.Chrome(options=options, service=service)
+    return webdriver.Remote(command_executor=grid_url, options=options)
 
 
 def add_cookies_by_domain(
@@ -69,21 +65,20 @@ def attend(cookies: list[dict]) -> list[str]:
     driver = add_cookies_by_domain(driver, cookies, "lk.etu.ru")
 
     driver.get("https://digital.etu.ru/attendance/student")
-    time.sleep(2)
+    time.sleep(1)
 
     button = driver.find_element(by="class name", value="btn")
     button.click()
 
-    time.sleep(3)
+    time.sleep(1)
     driver.get(driver.current_url)
     login_button = driver.find_element(by="xpath", value="//button[@type='submit']")
     login_button.click()
 
-    time.sleep(2)
+    time.sleep(3)
     if "id.etu.ru" in driver.current_url:
         raise EtuAuthException("Cookies are invalid")
 
-    time.sleep(3)
     rows = driver.find_elements(By.CLASS_NAME, "card-body")
     titles = []
     for row in rows:
@@ -98,7 +93,5 @@ def attend(cookies: list[dict]) -> list[str]:
             )
         except Exception:
             continue
-        finally:
-            time.sleep(1)
 
     return titles

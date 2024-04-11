@@ -3,10 +3,11 @@ from aiogram.types import Message
 from database.models import User
 from aiogram.filters import Command
 from aiogram import F, Router, Bot
-from inlines.auth import cancel_kb, auth_kb
+from inlines.auth import cancel_kb, menu_kb
 from states.login import LoginForm
 import services
 from database import queries
+from utils import etu_api
 from utils.exceptions import EtuAuthException
 from utils.validators import is_valid
 from dotenv import load_dotenv
@@ -28,8 +29,8 @@ async def command_login_handler(message: Message, state: FSMContext) -> None:
         message (Message): message
         state (FSMContext): authorization state
     """
-    if await queries.is_user_present(message.chat.id):
-        keyboard = await auth_kb(message.chat.id)
+    if await queries.users.is_user_present(message.chat.id):
+        keyboard = await menu_kb(message.chat.id)
         await message.answer(
             "Пользователь уже добавлен в автопосещаемость!", reply_markup=keyboard
         )
@@ -41,21 +42,20 @@ async def command_login_handler(message: Message, state: FSMContext) -> None:
     )
 
 
-@auth_router.message(Command("cancel"))
-@auth_router.message(F.text.casefold() == "cancel")
-async def command_cancel_handler(message: Message, state: FSMContext) -> None:
+@auth_router.message(Command("menu"))
+@auth_router.message(F.text.casefold() == "menu")
+async def command_menu_handler(message: Message, state: FSMContext) -> None:
     """Handler for /cancel command
 
     Args:
         message (Message): message
         state (FSMContext): state
     """
-    keyboard = await auth_kb(message.chat.id)
+    keyboard = await menu_kb(message.chat.id)
     current_state = await state.get_state()
-    if current_state is None:
-        return
-    await state.clear()
-    await message.answer("Авторизация отменена", reply_markup=keyboard)
+    if current_state:
+        await state.clear()
+    await message.answer("Меню", reply_markup=keyboard)
 
 
 @auth_router.message(LoginForm.email)
@@ -98,9 +98,15 @@ async def login_password_handler(message: Message, state: FSMContext) -> None:
     try:
         driver = services.auth.login(email, password)
         cookies = services.auth.login_lk(email, password, driver)
-        await queries.insert_or_update_user(User(id=message.chat.id, email=email))
-        await queries.insert_or_update_cookies(cookies, email)
-        keyboard = await auth_kb(message.chat.id)
+        group = await etu_api.get_user_group(cookies)
+        await queries.users.insert_or_update_user(
+            User(id=message.chat.id, email=email, group_id=group)
+        )
+        api_id = await queries.groups.get_group_api_id(group)
+        subjects = await etu_api.get_subjects(api_id)
+        await queries.users.insert_or_update_user_deadlines(message.chat.id, subjects)
+        await queries.cookies.insert_or_update_cookies(cookies, email)
+        keyboard = await menu_kb(message.chat.id)
         await message.answer(
             "Пользователь успешно добавлен в автопосещаемость!", reply_markup=keyboard
         )
@@ -113,6 +119,6 @@ async def login_password_handler(message: Message, state: FSMContext) -> None:
             ],
         )
     except EtuAuthException as e:
-        keyboard = await auth_kb(message.chat.id)
+        keyboard = await menu_kb(message.chat.id)
         await message.answer(str(e), reply_markup=keyboard)
     await state.clear()
