@@ -45,9 +45,13 @@ services:
       - bot
       - worker
     restart: always
+    networks:
+      - selenium-network
   redis:
     container_name: redis
     image: redis
+    networks:
+      - selenium-network
   postgres:
     container_name: postgres
     image: postgres
