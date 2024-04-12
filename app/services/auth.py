@@ -1,4 +1,4 @@
-from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.remote.webdriver import WebDriver
 from services.base import create_driver
 import time
 from utils.exceptions import EtuAuthException
