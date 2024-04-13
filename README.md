@@ -25,6 +25,7 @@
   - POSTGRES_DB
   - POSTGRES_HOST
   - POSTGRES_PORT
+  - SELENIUM_HOST
 4. в основной директории `docker compose --env-file ./app/.env up -d --build`
 5. создаем Pull Request в мой репозиторий
 
