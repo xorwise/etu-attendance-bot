@@ -1,7 +1,6 @@
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.chrome.options import Options
 import os
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from utils.exceptions import EtuAuthException
@@ -65,13 +64,25 @@ def attend(cookies: list[dict]) -> list[str]:
     driver = add_cookies_by_domain(driver, cookies, "lk.etu.ru")
 
     driver.get("https://digital.etu.ru/attendance/student")
-    time.sleep(1)
+    time.sleep(2)
 
-    button = driver.find_element(by="class name", value="btn")
+    try:
+        button = driver.find_element(by="class name", value="btn")
+    except Exception:
+        driver.quit()
+        raise EtuAuthException("Cookies are invalid")
     button.click()
 
     time.sleep(1)
     driver.get(driver.current_url)
+    try:
+        button = driver.find_element(by="class name", value="btn")
+    except Exception:
+        driver.quit()
+        raise EtuAuthException("Cookies are invalid")
+    button.click()
+
+    time.sleep(1)
     login_button = driver.find_element(by="xpath", value="//button[@type='submit']")
     login_button.click()
 
